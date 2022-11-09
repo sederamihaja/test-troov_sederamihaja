@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'test-nuxt',
@@ -45,6 +45,7 @@ export default {
     baseURL: '/',
   },
 
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  serverMiddleware: [
+    '~/api/index.js'
+  ]
 }

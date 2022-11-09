@@ -4,3 +4,11 @@ $secondary: #2b4d46;
 $text-secondary: #2b4d46;
 
 @import '~/node_modules/bootstrap/scss/bootstrap.scss';
+
+.dropdown-toggle,
+.btn {
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}

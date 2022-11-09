@@ -13,15 +13,18 @@
             <th scope="col"></th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Mark</td>
-            <td>Otto</td>
+        <tbody v-if="objects?.length">
+          <tr v-for="(object, index) in objects" :key="index">
+            <td>{{ object.name }}</td>
+            <td>{{ object.description }}</td>
             <td class="actions">
               <b-icon class="mr-3 action-button" icon="pencil-fill" variant="info"></b-icon>
               <b-icon class="action-button" icon="trash" variant="danger"></b-icon>
             </td>
           </tr>
+        </tbody>
+        <tbody v-else>
+          <td class="text-center text-warning" colspan="3">Liste vide ! Veuillez ajouter un objet</td>
         </tbody>
       </table>
     </div>
@@ -32,5 +35,12 @@
   export default {
     name: 'IndexPage',
     layout: 'layout',
+    async asyncData(context){
+      const responses = await context.$axios.get('/api/objects')
+      const data = responses?.data?.data
+      return {
+        objects: data
+      }
+    },
   }
 </script>

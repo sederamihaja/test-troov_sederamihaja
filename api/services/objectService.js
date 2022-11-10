@@ -25,4 +25,24 @@ ObjectService.findAll = (condition) => new Promise((resolve, reject) => {
     });
 });
 
+ObjectService.updateById = (_id, data) => new Promise((resolve, reject) => {
+  ObjectModele
+    .findByIdAndUpdate(_id, data, { useFindAndModify: false })
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((error) => {
+      reject(error);
+    });
+});
+
+ObjectService.deleteById = (_id) => new Promise((resolve, reject) => {
+  ObjectModele
+    .findOneAndRemove({
+      _id   
+    }, {useFindAndModify: false}).then(res => {
+      resolve(res);
+    });
+});
+
 module.exports = ObjectService;

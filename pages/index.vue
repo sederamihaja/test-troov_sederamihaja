@@ -5,7 +5,7 @@
       <div>
         <b-button variant="primary" @click="toggleModal">Ajouter un objet</b-button>
       </div>
-      <b-modal ref="modalObject" title="Ajouter un objet" hide-footer>
+      <b-modal ref="modalObject" :title="isUpdate === true  ? 'Modifier un objet' : 'Ajouter un objet'" hide-footer>
         <template #default>
           <form action="" method="post" @submit.prevent="saveData()">
             <div class="form-group">
@@ -90,25 +90,30 @@
     data() {
       return {
         modalShow: false,
-        isUpdate: true,
+        isUpdate: false,
         dismissNotification: false,
         notificationType: "",
         notificationMessage: "",
         errors:null,
         name:null,
         description:null,
+        idUpdate: null,
         idToDelete:null
       }
     },
     methods: {
       toggleModal() {
         this.errors = null
+        this.isUpdate = false
+        this.idUpdate = null
         this.name = null
         this.description = null
         this.$refs.modalObject.show()
       },
       toggleModalEdit(data) {
-        const { name, description } = data
+        const { _id, name, description } = data
+        this.isUpdate = true
+        this.idUpdate = _id
         this.name = name
         this.description = description
         this.errors = null
@@ -119,7 +124,16 @@
         this.idToDelete = id
       },
       deleteObject() {
-        console.log(this.idToDelete)
+        this.$axios.delete(`/api/objects/${this.idToDelete}`)
+        .then(() => {
+          this.$refs.modalDeleteObject.hide()
+          this.$nuxt.refresh()
+          this.showAlert("success", "Suppression d'un objet réussie !")
+          this.idToDelete = null
+        })
+        .catch( (error) => {
+          this.showAlert("danger", error)
+        });
       },
       showAlert(type, message) {
         this.dismissNotification = true
@@ -139,18 +153,29 @@
         }
 
         if (!this.errors.name && !this.errors.description) {
-          this.$axios.post( '/api/objects', {
-            name: this.name,
-            description: this.description,
-          })
-          .then((response) => {
-            this.$refs.modalObject.hide()
-            this.$nuxt.refresh()
-            this.showAlert("success", "Ajout d'un objet réussi !")
-          })
-          .catch( (error) => {
-            this.showAlert("danger", error)
-          });
+          const responses = this.isUpdate === true
+            ? this.$axios.put(`/api/objects/${this.idUpdate}`, {
+                name: this.name,
+                description: this.description,
+              })
+            : this.$axios.post('/api/objects', {
+              name: this.name,
+              description: this.description,
+            })
+          responses
+            .then(() => {
+              this.$refs.modalObject.hide()
+              this.$nuxt.refresh()
+              this.showAlert("success", this.isUpdate === true ? "Modification d'un objet réussie !" : "Ajout d'un objet réussi !")
+            })
+            .catch( (error) => {
+              const { type, msg } = error?.response?.data
+              if(type === "duplicate") {
+                this.errors = {...this.errors, name: msg}
+              } else {
+                this.showAlert("danger", error)
+              }
+            });
         }
       }
     },

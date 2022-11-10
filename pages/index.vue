@@ -5,13 +5,7 @@
       <div>
         <b-button variant="primary" @click="toggleModal">Ajouter un objet</b-button>
       </div>
-      <b-modal ref="modalObject" hide-footer>
-        <template #modal-header>
-          <div class="mx-auto">
-          <h4 class="text-secondary">Ajouter un objet</h4>
-          </div>
-        </template>
-
+      <b-modal ref="modalObject" title="Ajouter un objet" hide-footer>
         <template #default>
           <form action="" method="post" @submit.prevent="saveData()">
             <div class="form-group">
@@ -58,8 +52,8 @@
             <td>{{ object.name }}</td>
             <td>{{ object.description }}</td>
             <td class="actions">
-              <b-icon class="mr-3 action-button" icon="pencil-fill" variant="info"></b-icon>
-              <b-icon class="action-button" icon="trash" variant="danger"></b-icon>
+              <b-icon class="mr-3 action-button" icon="pencil-fill" variant="info" @click="toggleModalEdit(object)"></b-icon>
+              <b-icon class="action-button" icon="trash" variant="danger" @click="toggleModalDelete(object._id)"></b-icon>
             </td>
           </tr>
         </tbody>
@@ -67,6 +61,17 @@
           <td class="text-center text-warning" colspan="3">Liste vide ! Veuillez ajouter un objet</td>
         </tbody>
       </table>
+      <b-modal ref="modalDeleteObject" title="Supprimer un objet" centered>
+        <template #default>
+          <h3 class="text-center">Voullez vous vraimment supprimer cet objet ?</h3>
+        </template>
+        <template #modal-footer="{ cancel }">
+          <div class="d-flex justify-content-end">
+            <b-button class="btn btn-light mr-3" @click="cancel()">Annuler</b-button>
+            <b-button class="btn btn-danger mr-3" @click="deleteObject">Supprimer</b-button>
+          </div>
+        </template>>
+      </b-modal>
     </div>
   </div>
 </template>
@@ -91,12 +96,30 @@
         notificationMessage: "",
         errors:null,
         name:null,
-        description:null
+        description:null,
+        idToDelete:null
       }
     },
     methods: {
       toggleModal() {
+        this.errors = null
+        this.name = null
+        this.description = null
         this.$refs.modalObject.show()
+      },
+      toggleModalEdit(data) {
+        const { name, description } = data
+        this.name = name
+        this.description = description
+        this.errors = null
+        this.$refs.modalObject.show()
+      },
+      toggleModalDelete(id) {
+        this.$refs.modalDeleteObject.show()
+        this.idToDelete = id
+      },
+      deleteObject() {
+        console.log(this.idToDelete)
       },
       showAlert(type, message) {
         this.dismissNotification = true

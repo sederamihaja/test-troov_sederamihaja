@@ -34,7 +34,32 @@ module.exports = {
     'bootstrap-vue/nuxt',
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    //https://auth.nuxtjs.org/
+    '@nuxtjs/auth-next'
   ],
+
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: {
+            url: '/api/user/login',
+            method: 'post',
+            propertyName: 'token'
+          },
+          logout: true,
+        },
+        tokenRequired: true,
+        tokenType: "Bearer"
+      }
+    },
+    redirect: {
+      login: '/login',
+      logout: "/login",
+      home: '/'
+    },
+    rewriteRedirects: true,
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

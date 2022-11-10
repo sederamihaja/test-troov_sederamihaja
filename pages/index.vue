@@ -7,38 +7,31 @@
       </div>
       <b-modal ref="modalObject" :title="isUpdate === true  ? 'Modifier un objet' : 'Ajouter un objet'" hide-footer>
         <template #default>
-          <form action="" method="post" @submit.prevent="saveData()">
-            <div class="form-group">
+          <b-form action="" method="post" @submit.prevent="saveData()">
+            <b-form-group id="input_name">
               <label for="">Nom de l'objet</label>
-              <input v-model="name" type="text" class="form-control" :class="{ 'is-invalid': errors && errors.name }">
+              <b-form-input v-model="name" type="text" class="form-control" :class="{ 'is-invalid': errors && errors.name }" />
               <div v-if="errors && errors.name" class="invalid-feedback">
                 {{ errors.name }}
               </div>
-            </div>
+            </b-form-group>
 
-            <div class="form-group">
+            <b-form-group id="input_description">
               <label for="">Description</label>
-              <textarea v-model="description" cols="30" rows="4" class="form-control" :class="{ 'is-invalid': errors && errors.description }"></textarea>
+              <b-form-textarea v-model="description" cols="30" rows="4" class="form-control" :class="{ 'is-invalid': errors && errors.description }" />
               <div v-if="errors && errors.description" class="invalid-feedback">
                 {{ errors.description }}
               </div>
-            </div>
+            </b-form-group>
 
             <div class="d-flex justify-content-end">
               <input type="submit" value="Enregistrer" class="btn btn-primary mr-3">
             </div>
-          </form>
+          </b-form>
         </template>
       </b-modal>
     </div>
     <div class="mt-5">
-      <b-alert
-        :show="dismissNotification"
-        dismissible
-        :variant="notificationType"
-      >
-        {{ notificationMessage }}
-      </b-alert>
       <table class="table">
         <thead class="thead-light">
           <tr>
@@ -78,7 +71,6 @@
 
 <script>
   export default {
-    name: 'IndexPage',
     layout: 'layout',
     async asyncData(context){
       const responses = await context.$axios.get('/api/objects')
@@ -89,11 +81,7 @@
     },
     data() {
       return {
-        modalShow: false,
         isUpdate: false,
-        dismissNotification: false,
-        notificationType: "",
-        notificationMessage: "",
         errors:null,
         name:null,
         description:null,
@@ -128,17 +116,19 @@
         .then(() => {
           this.$refs.modalDeleteObject.hide()
           this.$nuxt.refresh()
-          this.showAlert("success", "Suppression d'un objet réussie !")
+          this.makeToast("success", "Suppression d'un objet réussie !")
           this.idToDelete = null
         })
         .catch( (error) => {
-          this.showAlert("danger", error)
+          this.makeToast("danger", error)
         });
       },
-      showAlert(type, message) {
-        this.dismissNotification = true
-        this.notificationType = type
-        this.notificationMessage = message
+      makeToast(type, message) {
+        this.$bvToast.toast(message, {
+          title: "Notification",
+          variant: type,
+          solid: true
+        })
       },
       saveData() {
         if (!this.name) {
@@ -166,14 +156,14 @@
             .then(() => {
               this.$refs.modalObject.hide()
               this.$nuxt.refresh()
-              this.showAlert("success", this.isUpdate === true ? "Modification d'un objet réussie !" : "Ajout d'un objet réussi !")
+              this.makeToast("success", this.isUpdate === true ? "Modification d'un objet réussie !" : "Ajout d'un objet réussi !")
             })
             .catch( (error) => {
               const { type, msg } = error?.response?.data
               if(type === "duplicate") {
                 this.errors = {...this.errors, name: msg}
               } else {
-                this.showAlert("danger", error)
+                this.makeToast("danger", error)
               }
             });
         }

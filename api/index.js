@@ -11,9 +11,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Require & Import API routes
 const objects = require('./routes/objectRoute')
+const user = require('./routes/userRoute')
 
 // Use API Routes
 app.use(objects)
+app.use(user)
 
 // Export the server middleware
 module.exports = {

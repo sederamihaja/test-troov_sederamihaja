@@ -48,6 +48,11 @@ module.exports = {
             propertyName: 'token'
           },
           logout: true,
+          user: {
+            url: '/api/user',
+            method: 'get',
+            propertyName: 'user'
+          }
         },
         tokenRequired: true,
         tokenType: "Bearer"

@@ -35,6 +35,9 @@
     name: "Login",
     middleware: 'auth',
     auth: 'guest',
+    head: {
+      title: "Login"
+    },
     data(){
       return{
         errors:null,
@@ -63,7 +66,7 @@
                 password: this.password
               }
             })
-            .then(() => this.$router.push({ path: '/' }))
+            .then((res) => this.$auth.$storage.setUniversal('user', res.data.user, true))
             .catch( (error) => {
               const { errorFor, msg } = error?.response?.data
               if (errorFor) {

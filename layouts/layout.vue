@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TheNavbar />
+    <div v-if="user"><TheNavbar /></div>
 
     <div class="container mt-4">
       <Nuxt />
@@ -11,9 +11,14 @@
 <script>
   import TheNavbar from '~/components/TheNavbar'
   export default {
-    name: 'layout',
+    name: 'Layout',
     components: {
       TheNavbar
+    },
+    computed: {
+      user() {
+        return this.$auth.$storage.getUniversal('user');
+      }
     }
   }
 </script>

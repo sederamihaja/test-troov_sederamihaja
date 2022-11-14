@@ -71,7 +71,9 @@
 
 <script>
   export default {
+    name: "User",
     layout: 'layout',
+    middleware: 'auth',
     async asyncData(context){
       const responses = await context.$axios.get('/api/objects')
       const data = responses?.data?.data
@@ -88,6 +90,9 @@
         idUpdate: null,
         idToDelete:null
       }
+    },
+    head: {
+      title: "Accueil"
     },
     methods: {
       toggleModal() {

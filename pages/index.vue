@@ -3,33 +3,8 @@
     <div class="d-flex justify-content-between">
       <div><h2 class="text-secondary">Liste de tous les objets</h2></div>
       <div>
-        <b-button variant="primary" @click="toggleModal">Ajouter un objet</b-button>
+        <nuxt-link to="/add" class="btn btn-primary">Ajouter un objet</nuxt-link>
       </div>
-      <b-modal ref="modalObject" :title="isUpdate === true  ? 'Modifier un objet' : 'Ajouter un objet'" hide-footer>
-        <template #default>
-          <b-form action="" method="post" @submit.prevent="saveData()">
-            <b-form-group id="input_name">
-              <label for="">Nom de l'objet</label>
-              <b-form-input v-model="name" type="text" class="form-control" :class="{ 'is-invalid': errors && errors.name }" />
-              <div v-if="errors && errors.name" class="invalid-feedback">
-                {{ errors.name }}
-              </div>
-            </b-form-group>
-
-            <b-form-group id="input_description">
-              <label for="">Description</label>
-              <b-form-textarea v-model="description" cols="30" rows="4" class="form-control" :class="{ 'is-invalid': errors && errors.description }" />
-              <div v-if="errors && errors.description" class="invalid-feedback">
-                {{ errors.description }}
-              </div>
-            </b-form-group>
-
-            <div class="d-flex justify-content-end">
-              <input type="submit" value="Enregistrer" class="btn btn-primary mr-3">
-            </div>
-          </b-form>
-        </template>
-      </b-modal>
     </div>
     <div class="mt-5">
       <table class="table">
@@ -45,7 +20,9 @@
             <td>{{ object.name }}</td>
             <td>{{ object.description }}</td>
             <td class="actions">
-              <b-icon class="mr-3 action-button" icon="pencil-fill" variant="info" @click="toggleModalEdit(object)"></b-icon>
+              <nuxt-link :to="`/${object._id}`">
+                <b-icon class="mr-3 action-button" icon="pencil-fill" variant="info"></b-icon>
+              </nuxt-link>
               <b-icon class="action-button" icon="trash" variant="danger" @click="toggleModalDelete(object._id)"></b-icon>
             </td>
           </tr>
@@ -71,7 +48,7 @@
 
 <script>
   export default {
-    name: "User",
+    name: "Home",
     layout: 'layout',
     middleware: 'auth',
     async asyncData(context){
@@ -83,11 +60,6 @@
     },
     data() {
       return {
-        isUpdate: false,
-        errors:null,
-        name:null,
-        description:null,
-        idUpdate: null,
         idToDelete:null
       }
     },
@@ -95,23 +67,6 @@
       title: "Accueil"
     },
     methods: {
-      toggleModal() {
-        this.errors = null
-        this.isUpdate = false
-        this.idUpdate = null
-        this.name = null
-        this.description = null
-        this.$refs.modalObject.show()
-      },
-      toggleModalEdit(data) {
-        const { _id, name, description } = data
-        this.isUpdate = true
-        this.idUpdate = _id
-        this.name = name
-        this.description = description
-        this.errors = null
-        this.$refs.modalObject.show()
-      },
       toggleModalDelete(id) {
         this.$refs.modalDeleteObject.show()
         this.idToDelete = id
@@ -135,44 +90,6 @@
           solid: true
         })
       },
-      saveData() {
-        if (!this.name) {
-          this.errors = {...this.errors, name: "Veuillez ajouter un nom"}
-        } else {
-          this.errors = {...this.errors, name: null}
-        }
-        if (!this.description) {
-          this.errors = {...this.errors, description: "Veuillez ajouter une description"}
-        } else {
-          this.errors = {...this.errors, description: null}
-        }
-
-        if (!this.errors.name && !this.errors.description) {
-          const responses = this.isUpdate === true
-            ? this.$axios.put(`/api/objects/${this.idUpdate}`, {
-                name: this.name,
-                description: this.description,
-              })
-            : this.$axios.post('/api/objects', {
-              name: this.name,
-              description: this.description,
-            })
-          responses
-            .then(() => {
-              this.$refs.modalObject.hide()
-              this.$nuxt.refresh()
-              this.makeToast("success", this.isUpdate === true ? "Modification d'un objet réussie !" : "Ajout d'un objet réussi !")
-            })
-            .catch( (error) => {
-              const { type, msg } = error?.response?.data
-              if(type === "duplicate") {
-                this.errors = {...this.errors, name: msg}
-              } else {
-                this.makeToast("danger", error)
-              }
-            });
-        }
-      }
     },
   }
 </script>

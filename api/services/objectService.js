@@ -25,6 +25,17 @@ ObjectService.findAll = (condition) => new Promise((resolve, reject) => {
     });
 });
 
+ObjectService.findById = (_id) => new Promise((resolve, reject) => {
+  ObjectModele
+    .findById(_id)
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((error) => {
+      reject(error);
+    });
+});
+
 ObjectService.updateById = (_id, data) => new Promise((resolve, reject) => {
   ObjectModele
     .findByIdAndUpdate(_id, data, { useFindAndModify: false })

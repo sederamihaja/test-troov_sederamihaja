@@ -9,6 +9,8 @@ router.route('/objects')
   .get(objectController.findAll)
 
 router.route("/objects/:id")
+  // Retrieve by ID
+  .get(objectController.findById)
   // Update by id
   .put(objectController.updateById)
   // Delete by id

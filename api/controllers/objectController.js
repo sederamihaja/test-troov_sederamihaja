@@ -34,6 +34,20 @@ ObjetController.findAll = async (req, res) => {
 	}
 };
 
+// Retrieve by id
+ObjetController.findById = async (req, res) => {
+	try {
+		if (!req.params.id) {
+			throw new Error("Objet introuvable !");
+		}
+		const objet = await ObjectService.findById(req.params.id);
+		ResponseUtil.sendSuccess(res, objet);
+	} catch (err) {
+		ResponseUtil.sendError(res, err);
+	}
+}
+
+
 // Update Object by id
 ObjetController.updateById = async (req, res) => {
 	try {
